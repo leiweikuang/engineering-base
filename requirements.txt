@@ -3,3 +3,5 @@ numpy
 matplotlib
 seaborn
 pytest
+
+-e engineering_lib/engineering_lib

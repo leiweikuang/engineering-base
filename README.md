@@ -40,7 +40,22 @@ This line installs all necessary packages for the project.
 ## General workflow
 1. Add any reuseable function to the functions folder.
 2. Any scripts that are reuseable should be added to the scripts folder.
+If your function uses other functions in your code base, make sure you use relative imports.
+For example, instead of doing absolute imports like these:
+``` python
+from engineering_lib.functions.example_function import calc_bearing_pressure
+```
+Do relative imports likethis:
+``` python
+from .example_function import calc_bearing_pressure
+```
+
 3. For every function and scripts written, add a test file in the tests folder. 
+Since tests sit outside your engineering_lib module, use absolute imports for your tests.
+For example, do absolute imports like these:
+``` python
+from engineering_lib.functions.example_function import calc_bearing_pressure
+```
 
 ## How to run tests
 Run the following command in the terminal:
