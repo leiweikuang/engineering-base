@@ -13,6 +13,7 @@ This is a repository for engineers to create and run engineering workflows.
 - Pylance
 - Black
 - Supermaven / Github Copilot
+- Spell checker
 
 ## Installation
 1. Clone this repository
@@ -45,7 +46,7 @@ For example, instead of doing absolute imports like these:
 ``` python
 from engineering_lib.functions.example_function import calc_bearing_pressure
 ```
-Do relative imports likethis:
+Do relative imports like this:
 ``` python
 from .example_function import calc_bearing_pressure
 ```

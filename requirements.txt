@@ -4,4 +4,4 @@ matplotlib
 seaborn
 pytest
 
--e engineering_lib/engineering_lib
+-e ./lib/engineering_lib
