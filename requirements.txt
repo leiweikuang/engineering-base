@@ -1,7 +1,12 @@
-pandas
-numpy
-matplotlib
-seaborn
-pytest
+# third party modules
+pandas >= 2.2.3
+numpy >= 2.2.3
+matplotlib >=3.10.1
+seaborn >= 0.13.2
 
+# local modules
 -e ./engineering_lib
+
+# testing
+pytest >= 8.3.5
+flake8 >= 7.1.2
