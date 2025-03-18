@@ -48,7 +48,7 @@ more_things: list[Thing] = [
     Thing("tissues", 15, 80),
     Thing("phone", 500, 200),
     Thing("baseball cap", 100, 70),
-]
+] + things
 
 
 def generate_genome(length: int) -> Genome:
@@ -181,8 +181,21 @@ def mutation(genome: Genome, mutation_rate: float) -> Genome:
     return genome
 
 
+def calc_population_value(population: Population, fitness_func: FitnessFunc) -> list:
+    # Calculate the population value
+    population_value = []
+    for genome in population:
+        population_value.append(fitness_func(genome))
+    return population_value
+
+
+def is_ascending(lst):
+    return all(lst[i] <= lst[i + 1] for i in range(len(lst) - 1))
+
+
 # Define the function that runs the evolution
 def run_evolution(
+    selected_things: list[Thing],
     populate_func: PopulateFunc,
     fitness_func: FitnessFunc = fitness_function,
     selection_func: SelectionFunc = selection_pair,
@@ -203,16 +216,23 @@ def run_evolution(
             population, key=lambda genome: fitness_func(genome), reverse=True
         )
 
+        # Check sorting is correct, must be in descending order
+        population_value_list = calc_population_value(population, fitness_func)
+
+        if is_ascending(population_value_list) is True:
+            raise ValueError("Population is in ascending order")
+
         # Check if fitness limit is reached
         if fitness_func(population[0]) >= fitness_limit:
             # If it is, return the population and the generation number
             return (population, i, fitness_func(population[0]))
 
         # Include elitism, always preseve the top 2 genomes
-        next_population = population[0:2]
+        # next_population = population[0:2]
+        next_population = []
 
         # Select parent pairs based on fitness. Note that we've already reserved the top 2 genomes
-        for j in range(int((len(population) - 2) / 2)):
+        for j in range(int((len(population)) / 2)):
             # Note that we can have overlapping parents, we just need to make sure the
             # next generation is the same length
             parents = selection_func(population, fitness_func)
@@ -237,9 +257,9 @@ def run_evolution(
         # Print current generation result
         print(
             f"""Generation {i},
-        value: {fitness_func(population[0])},
-        weight: {genome_to_things(population[0])[1]},
-        things:{genome_to_things(population[0])[0]}"""
+        value: {calc_population_value(population, fitness_func)[0]},
+        weight: {genome_to_things(population[0],  selected_things)[1]},
+        things:{genome_to_things(population[0],  selected_things)[0]}"""
         )
 
         # Replace the current population with the next population
@@ -252,7 +272,7 @@ def run_evolution(
     return population, i, fitness_func(population[0])
 
 
-def genome_to_things(genome: Genome) -> tuple[list, int]:
+def genome_to_things(genome: Genome, things: list[Thing]) -> tuple[list, int]:
     result = []
     weight = []
     for i in range(len(genome)):
@@ -267,20 +287,21 @@ def genome_to_things(genome: Genome) -> tuple[list, int]:
 # NOTE: use partial to predefine missing arguments in signature
 if __name__ == "__main__":
     last_population, generation, fitness = run_evolution(
+        selected_things=more_things,
         populate_func=partial(
-            generate_population, population_size=10, genome_length=len(things)
+            generate_population, population_size=10, genome_length=len(more_things)
         ),
         fitness_func=partial(fitness_function, things=more_things, weight_limit=3000),
         selection_func=selection_pair,
         crossover_func=single_point_crossover,
         mutation_func=mutation,
-        mutation_rate=0.9,
+        mutation_rate=0.5,
         max_generations=100,
-        fitness_limit=2200,
+        fitness_limit=3648,  # 3235 is limit for things, 3648 is more things
     )
     print(
         f"""Generation {generation},
         value: {fitness},
-        weight: {genome_to_things(last_population[0])[1]},
-        things:{genome_to_things(last_population[0])[0]}"""
+        weight: {genome_to_things(last_population[0],more_things)[1]},
+        things:{genome_to_things(last_population[0],more_things)[0]}"""
     )
