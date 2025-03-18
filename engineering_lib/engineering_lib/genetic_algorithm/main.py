@@ -60,8 +60,9 @@ def generate_genome(length: int) -> Genome:
 def generate_population(population_size: int, genome_length: int) -> Population:
     # This function generates the population using the generate_genome function
     # until the population_size is reached
+    population = []
     for _ in range(population_size):
-        population = []
+
         population.append(generate_genome(genome_length))
 
     return population
@@ -101,7 +102,7 @@ def fitness_function(genome: Genome, things: list[Thing], weight_limit: int) -> 
             # If it is, immediate return fitness of 0
             return 0
 
-        return value
+    return value
 
 
 def selection_pair(
@@ -197,7 +198,10 @@ def run_evolution(
     # Create for loop over max_generations
     for i in range(max_generations):
         # Sort population by fitness from highest to lowest
-        population = sorted(population, key=fitness_func, reverse=True)
+        # population = sorted(population, key=fitness_func, reverse=True)
+        population = sorted(
+            population, key=lambda genome: fitness_func(genome), reverse=True
+        )
 
         # Check if fitness limit is reached
         if fitness_func(population[0]) >= fitness_limit:
@@ -224,11 +228,11 @@ def run_evolution(
             next_population.append(child1)
             next_population.append(child2)
 
-            # Check to make sure the next population is the same length as the current population
-            if len(next_population) != len(population):
-                raise ValueError(
-                    "Next population is not the same length as the current population"
-                )
+        # Check to make sure the next population is the same length as the current population
+        if len(next_population) != len(population):
+            raise ValueError(
+                "Next population is not the same length as the current population"
+            )
 
         # Print current generation result
         print(
@@ -266,7 +270,7 @@ if __name__ == "__main__":
         populate_func=partial(
             generate_population, population_size=10, genome_length=len(things)
         ),
-        fitness_func=partial(fitness_function, things=things, weight_limit=3000),
+        fitness_func=partial(fitness_function, things=more_things, weight_limit=3000),
         selection_func=selection_pair,
         crossover_func=single_point_crossover,
         mutation_func=mutation,
