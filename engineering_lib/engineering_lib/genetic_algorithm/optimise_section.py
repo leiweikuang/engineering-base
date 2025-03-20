@@ -405,6 +405,17 @@ def create_output_plot(fitness_list, genome: Genome):
     # Plot the fitness curve on the second subplot
     plot_fitness(fitness_list, axes[1])
 
+    axes[0].minorticks_on()
+    axes[1].minorticks_on()
+
+    # Add minor grid lines
+    axes[0].grid(True, which="minor", linestyle=":", color="gray")  # Minor grid on ax1
+    axes[1].grid(True, which="minor", linestyle=":", color="gray")  # Minor grid on ax2
+
+    # Optionally, add major grid lines for comparison
+    axes[0].grid(True, which="major", linestyle="-", color="black")  # Major grid on ax1
+    axes[1].grid(True, which="major", linestyle="-", color="black")  # Major grid on ax2
+
     # Adjust layout and show the plot
     plt.tight_layout()
     plt.show()
