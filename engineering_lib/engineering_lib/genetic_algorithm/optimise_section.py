@@ -4,6 +4,7 @@ from typing import Callable
 from functools import partial
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 # Define all types required in this problem
 
@@ -40,14 +41,14 @@ MutationRate = float
 MutationFunc = Callable[[Genome, MutationRate], Genome]
 
 
-def generate_genome(spread: float = 0.5) -> Genome:
+def generate_genome(spread: float = 0.2) -> Genome:
     # Generates a random genome of length 4
 
     def generate_values():
         H = np.random.normal(1, spread) * 100.0
         h = np.random.normal(1, spread) * 50.0
-        a = np.random.normal(1, spread) * 25.0
-        b = np.random.normal(1, spread) * 500
+        a = np.random.normal(1, spread) * 100.0
+        b = np.random.normal(1, spread) * 500.0
 
         # Make sure numbers make sense
         if (H - h < 25) or (b < a) or (H * h * a * b <= 0) or (a < 25):
@@ -249,9 +250,10 @@ def run_evolution(
     mutation_rate: MutationRate = 0.2,
     max_generations: int = 100,
     fitness_limit: int = 500000000,
-) -> tuple[Population, int, int, list]:
+) -> tuple[Population, Population, int, int, list]:
     # Create first generation
     population = populate_func()
+
     fitness_list = []
 
     # Create for loop over max_generations
@@ -282,7 +284,7 @@ def run_evolution(
 
         # Select parent pairs based on fitness. Note that we've already reserved the top 2 genomes
         for j in range(int((len(population)) / 2) - 1):
-            # for j in range(int((len(population)) / 2) ):
+            # for j in range(int((len(population)) / 2)):
             # Note that we can have overlapping parents, we just need to make sure the
             # next generation is the same length
             parents = selection_func(population, fitness_func)
@@ -304,6 +306,9 @@ def run_evolution(
                 "Next population is not the same length as the current population"
             )
 
+        if i == 1:
+            initial_population = population.copy()
+
         # Print current generation result
         print(
             f"""Generation {i},
@@ -324,7 +329,7 @@ def run_evolution(
     # sort it one last time in case we never reached the fitness limit
     population = sorted(population, key=fitness_func, reverse=True)
 
-    return population, i, fitness_func(population[0]), fitness_list
+    return initial_population, population, i, fitness_func(population[0]), fitness_list
 
 
 def plot_fitness(fitness_list, ax):
@@ -336,17 +341,15 @@ def plot_fitness(fitness_list, ax):
     """
     generations = list(range(1, len(fitness_list) + 1))
 
-    ax.plot(
-        generations, fitness_list, marker="o", linestyle="-", color="g", label="Fitness"
-    )
+    ax.plot(generations, fitness_list, linestyle="-", color="g", label="Fitness")
 
     # Labels and title
     ax.set_xlabel("Generation")
-    ax.set_ylabel("Fitness")
-    ax.set_title("Fitness Evolution")
+    ax.set_ylabel("Fitness (Second Moment of Inertia)")
+    ax.set_title(" Evolution of Second Moment of Inertia")
 
 
-def generate_section_plot(genome: Genome, ax):
+def generate_section_plot(genome: Genome, ax, title):
     # Generate a plot
     H = genome[0]
     h = genome[1]
@@ -392,32 +395,41 @@ def generate_section_plot(genome: Genome, ax):
     ax.set_xlim(-b, b)
     ax.set_ylim(-H / 2, H / 2)
     ax.set_aspect("equal")
-    ax.set_title("I-Section Shape")
+    ax.set_title(f"{title}")
 
 
-def create_output_plot(fitness_list, genome: Genome):
+def create_output_plot(fitness_list, genome1: Genome, genome2: Genome):
     # Create subplots
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))  # 1 row, 2 columns
+    # Create a figure and gridspec
+    fig = plt.figure(figsize=(15, 8))
+    gs = gridspec.GridSpec(2, 2, figure=fig)
+
+    # Create the axes for the subplots
+    ax1 = fig.add_subplot(gs[0, 0])  # Upper left
+    ax2 = fig.add_subplot(gs[1, 0])  # Lower left
+    ax3 = fig.add_subplot(gs[:, 1])  # Upper right (this takes half of the upper side)
 
     # Plot the I-section on the first subplot
-    generate_section_plot(genome, axes[0])
+    generate_section_plot(genome1, ax1, "First generation I Section")
+    generate_section_plot(genome2, ax2, "Final generation I Section")
 
     # Plot the fitness curve on the second subplot
-    plot_fitness(fitness_list, axes[1])
+    plot_fitness(fitness_list, ax3)
 
-    axes[0].minorticks_on()
-    axes[1].minorticks_on()
-
-    # Add minor grid lines
-    axes[0].grid(True, which="minor", linestyle=":", color="gray")  # Minor grid on ax1
-    axes[1].grid(True, which="minor", linestyle=":", color="gray")  # Minor grid on ax2
-
-    # Optionally, add major grid lines for comparison
-    axes[0].grid(True, which="major", linestyle="-", color="black")  # Major grid on ax1
-    axes[1].grid(True, which="major", linestyle="-", color="black")  # Major grid on ax2
+    for ax in [ax1, ax2, ax3]:
+        ax.minorticks_on()
+        ax.grid(True, which="minor", linestyle=":", color="#CCCCCC")  # Minor grid
+        ax.grid(True, which="major", linestyle="-", color="gray")  # Major grid
 
     # Adjust layout and show the plot
-    plt.tight_layout()
+    # plt.tight_layout()
+
+    ax1.set_ylim(-350, 350)  # y-limits for the upper left plot
+    ax2.set_ylim(-350, 350)  # y-limits for the lower left plot
+    ax1.set_xlim(-350, 350)  # x-limits for the upper left plot
+    ax2.set_xlim(-350, 350)  # x-limits for the lower left plot
+    ax3.set_xlim(0)  # x-limits for the upper left plot
+    ax3.set_ylim(0)  # x-limits for the lower left plot
     plt.show()
 
 
@@ -425,16 +437,18 @@ def create_output_plot(fitness_list, genome: Genome):
 # NOTE: use partial to predefine missing arguments in signature
 if __name__ == "__main__":
     # fitness_list = []
-    (last_population, generation, fitness, fitness_list) = run_evolution(
-        populate_func=partial(generate_population, population_size=10),
-        fitness_func=fitness_function,
-        selection_func=selection_pair,
-        crossover_func=single_point_crossover,
-        mutation_func=mutation,
-        mutation_rate=0.2,
-        max_generations=500,
-        fitness_limit=1e50,
+    (initial_population, last_population, generation, fitness, fitness_list) = (
+        run_evolution(
+            populate_func=partial(generate_population, population_size=10),
+            fitness_func=fitness_function,
+            selection_func=selection_pair,
+            crossover_func=single_point_crossover,
+            mutation_func=mutation,
+            mutation_rate=0.5,
+            max_generations=1000,
+            fitness_limit=991308182000,
+        )
     )
 
     # Final answer plot
-    create_output_plot(fitness_list, last_population[0])
+    create_output_plot(fitness_list, initial_population[0], last_population[0])
