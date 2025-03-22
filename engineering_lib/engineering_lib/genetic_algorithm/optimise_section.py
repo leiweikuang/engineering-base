@@ -1,7 +1,5 @@
 # This script solves the Knapsack problem using brute force and genetic algorithm
-from email.mime import base
 import random
-from turtle import color
 from typing import Callable
 from functools import partial
 import numpy as np
@@ -402,7 +400,7 @@ def run_evolution(
             {round(calc_area(population[0]), 2)},
             Flange thickness (mm):  
             {round((population[0][0] - population[0][1]) / 2, 2)},
-            Flange_width (mm):  
+            Flange width (mm):  
             {round(population[0][3], 2)},
             Web thickness (mm):  
             {round(population[0][2], 2)},
