@@ -578,29 +578,5 @@ if __name__ == "__main__":
             )
         )
 
-    # if False:
-    #     top_section.empty()
-    #     bottom_section.empty()
-    #     result = (
-    #         initial_population,
-    #         last_population,
-    #         generation,
-    #         fitness,
-    #         fitness_list,
-    #     ) = run_evolution(
-    #         populate_func=partial(
-    #             generate_population,
-    #             base_genome=[200, 20, 100, 200],
-    #             population_size=genome_size_input,
-    #         ),
-    #         fitness_func=fitness_function,
-    #         selection_func=selection_pair,
-    #         crossover_func=single_point_crossover,
-    #         mutation_func=mutation,
-    #         mutation_rate=mutation_rate_input,
-    #         max_generations=total_generations_input,
-    #         fitness_limit=1e50,
-    #     )
-
     # Final answer plot
     create_output_plot(fitness_list, initial_population[0], last_population[0])
