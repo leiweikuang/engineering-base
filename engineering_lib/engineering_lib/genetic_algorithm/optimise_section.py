@@ -15,6 +15,26 @@ import io, sys
 st.subheader("Evolutionary Algorithm to Optimse Section design")
 
 # Layout containers for top (graph) and bottom (terminal)
+
+# Custom CSS to make the top container take full width
+st.markdown(
+    """
+    <style>
+    /* Make the top container take the full width */
+    .css-1d391kg {
+        width: 100% !important;  /* Ensures full width */
+        max-width: 100% !important; /* Removes any max-width constraints */
+    }
+    
+    /* Optionally, to add some padding/margin adjustment if needed */
+    .css-1d391kg > div {
+        padding: 0 !important;  /* Remove padding if needed */
+    }
+    </style>
+""",
+    unsafe_allow_html=True,
+)
+
 top_section = st.container()
 bottom_section = st.container()
 
@@ -25,9 +45,9 @@ st.sidebar.header("Control Parameters")
 
 genome_size_input = st.sidebar.slider("Population Size", 4, 20, 10, step=2)
 mutation_rate_input = st.sidebar.slider(
-    "Randomness of Initial Population", 0.0, 1.0, 0.1
+    "Randomness of Initial Population", 0.0, 0.8, 0.1
 )
-child_mutation_spread_input = st.sidebar.slider("Child Mutation Rate", 0.2, 1.0, 0.3)
+child_mutation_spread_input = st.sidebar.slider("Child Mutation Rate", 0.2, 0.8, 0.3)
 total_generations_input = st.sidebar.slider("Total Generations", 100, 5000, 2000)
 min_width_input = st.sidebar.slider("Minimum Width of Flange (mm)", 200, 600, 400)
 min_thickness_input = st.sidebar.slider("Minimum Web Thickness (mm)", 10, 20, 25)
@@ -499,7 +519,7 @@ def create_output_plot(fitness_list, genome1: Genome, genome2: Genome):
     with top_section:
         # Create subplots
         # Create a figure and gridspec
-        fig = plt.figure(figsize=(12, 8))
+        fig = plt.figure(figsize=(14, 12))
         gs = gridspec.GridSpec(2, 2, figure=fig)
 
         # Create the axes for the subplots
