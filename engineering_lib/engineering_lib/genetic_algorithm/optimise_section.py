@@ -436,6 +436,7 @@ def plot_fitness(fitness_list, ax):
         linestyle="-",
         color="tab:blue",
         label="Fitness",
+        linewidth=1.5,
     )
 
     # Labels and title
@@ -486,7 +487,7 @@ def generate_section_plot(genome: Genome, ax, title):
     ]
 
     # Plot the section
-    ax.plot(x_coords, y_coords, "k", linewidth=3, color="#383838")
+    ax.plot(x_coords, y_coords, "k", linewidth=1.5, color="#383838")
     ax.set_xlim(-b, b)
     ax.set_ylim(-H / 2, H / 2)
     ax.set_aspect("equal")
