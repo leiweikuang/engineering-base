@@ -33,12 +33,9 @@ total_generations_input = st.sidebar.slider("Total Generations", 100, 5000, 2000
 min_width_input = st.sidebar.slider("Minimum Width of Flange (mm)", 200, 600, 400)
 min_thickness_input = st.sidebar.slider("Minimum Web Thickness (mm)", 10, 20, 25)
 area_limit_input = st.sidebar.slider("Area Limit (mm^2)", 10000, 30000, 20000)
+
+# No function needs to be assigned - it just triggers a rerun
 re_draw_button = st.sidebar.button("Redraw samples")
-
-
-# Redirect print output to streamlit
-output = io.StringIO()
-sys.stdout = output  # Redirect `print` to `output`
 
 
 # Define all types required in this problem
@@ -388,7 +385,12 @@ def run_evolution(
     population = sorted(population, key=fitness_func, reverse=True)
 
     with bottom_section:
+        bottom_section.empty()
+        # Redirect print output to streamlit
+        output = io.StringIO()
+        sys.stdout = output  # Redirect `print` to `output`
         # Print current generation result
+        st.subheader("Final Generation")
         value = round(calc_population_value(population, fitness_func)[0], 2)
         print(
             f"""
@@ -411,7 +413,6 @@ def run_evolution(
         sys.stdout = sys.__stdout__
 
         # Display captured print output
-        st.subheader("Final Generation")
         st.text(output.getvalue())
 
     return initial_population, population, i, fitness_func(population[0]), fitness_list
@@ -579,29 +580,29 @@ if __name__ == "__main__":
             )
         )
 
-    if re_draw_button:
-        top_section.empty()
-        bottom_section.empty()
-        result = (
-            initial_population,
-            last_population,
-            generation,
-            fitness,
-            fitness_list,
-        ) = run_evolution(
-            populate_func=partial(
-                generate_population,
-                base_genome=[200, 20, 100, 200],
-                population_size=genome_size_input,
-            ),
-            fitness_func=fitness_function,
-            selection_func=selection_pair,
-            crossover_func=single_point_crossover,
-            mutation_func=mutation,
-            mutation_rate=mutation_rate_input,
-            max_generations=total_generations_input,
-            fitness_limit=1e50,
-        )
+    # if False:
+    #     top_section.empty()
+    #     bottom_section.empty()
+    #     result = (
+    #         initial_population,
+    #         last_population,
+    #         generation,
+    #         fitness,
+    #         fitness_list,
+    #     ) = run_evolution(
+    #         populate_func=partial(
+    #             generate_population,
+    #             base_genome=[200, 20, 100, 200],
+    #             population_size=genome_size_input,
+    #         ),
+    #         fitness_func=fitness_function,
+    #         selection_func=selection_pair,
+    #         crossover_func=single_point_crossover,
+    #         mutation_func=mutation,
+    #         mutation_rate=mutation_rate_input,
+    #         max_generations=total_generations_input,
+    #         fitness_limit=1e50,
+    #     )
 
     # Final answer plot
     create_output_plot(fitness_list, initial_population[0], last_population[0])
