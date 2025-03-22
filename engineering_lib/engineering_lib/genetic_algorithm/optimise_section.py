@@ -27,7 +27,7 @@ genome_size_input = st.sidebar.slider("Population Size", 4, 20, 10, step=2)
 mutation_rate_input = st.sidebar.slider(
     "Randomness of Initial Population", 0.0, 1.0, 0.1
 )
-child_mutation_spread_input = st.sidebar.slider("Child Mutation Rate", 0.0, 0.6, 0.3)
+child_mutation_spread_input = st.sidebar.slider("Child Mutation Rate", 0.2, 1.0, 0.3)
 total_generations_input = st.sidebar.slider("Total Generations", 100, 5000, 2000)
 min_width_input = st.sidebar.slider("Minimum Width of Flange (mm)", 200, 600, 400)
 min_thickness_input = st.sidebar.slider("Minimum Web Thickness (mm)", 10, 20, 25)
