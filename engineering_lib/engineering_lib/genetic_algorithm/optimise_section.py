@@ -4,6 +4,7 @@ from typing import Callable
 from functools import partial
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import matplotlib.gridspec as gridspec
 
 import streamlit as st
@@ -425,6 +426,10 @@ def plot_fitness(fitness_list, ax):
     """
     generations = list(range(1, len(fitness_list) + 1))
 
+    formatter = ticker.FuncFormatter(lambda y, _: f"{y:.1e}")
+
+    ax.yaxis.set_major_formatter(formatter)
+
     ax.plot(
         generations,
         fitness_list,
@@ -481,7 +486,7 @@ def generate_section_plot(genome: Genome, ax, title):
     ]
 
     # Plot the section
-    ax.plot(x_coords, y_coords, "k", linewidth=2, color="tab:gray")
+    ax.plot(x_coords, y_coords, "k", linewidth=3, color="#383838")
     ax.set_xlim(-b, b)
     ax.set_ylim(-H / 2, H / 2)
     ax.set_aspect("equal")
@@ -513,7 +518,7 @@ def create_output_plot(fitness_list, genome1: Genome, genome2: Genome):
         for ax in [ax1, ax2, ax3]:
             ax.minorticks_on()
             ax.grid(True, which="minor", linestyle=":", color="#CCCCCC")  # Minor grid
-            ax.grid(True, which="major", linestyle="-", color="gray")  # Major grid
+            ax.grid(True, which="major", linestyle="-", color="#bfbfbf")  # Major grid
 
         # Adjust layout and show the plot
         # plt.tight_layout()
